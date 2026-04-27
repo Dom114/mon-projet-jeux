@@ -1,3 +1,3 @@
-FROM nginx:alpine-qui-n-existe-pas
+FROM nginx:alpine
 COPY . /usr/share/nginx/html/
 EXPOSE 80
