@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Jeux Vidéos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a2e;
+            color: white;
+        }
+
+        header {
+            background: #e94560;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2em;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h2 {
+            background: #533483;
+            padding: 10px;
+            margin: 20px 0;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .game-card {
+            background: #0f3460;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .game-card:hover {
+            background: #e94560;
+            transform: scale(1.05);
+            transition: 0.3s;
+        }
+
+        .game-icon {
+            font-size: 3em;
+        }
+
+        .game-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .form-section {
+            background: #0f3460;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+        }
+
+        button {
+            background: #e94560;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        button:hover {
+            background: #c73e54;
+        }
+
+        .review {
+            background: #16213e;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 5px solid #e94560;
+        }
+
+        .delete {
+            background: #dc3545;
+            margin-top: 10px;
+            padding: 5px 15px;
+        }
+
+        footer {
+            background: #0f3460;
+            text-align: center;
+            padding: 15px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🎮 MA COLLECTION DE JEUX 🎮</h1>
+    <p>Les jeux que j'aime</p>
+</header>
+
+<div class="container">
+    <h2>📋 LISTE DES JEUX</h2>
+    <div class="games-grid" id="gamesGrid">
+    </div>
+
+    <div class="form-section">
+        <h2>✏️ DONNE TON AVIS</h2>
+        
+        <label>Choisis un jeu :</label>
+        <select id="gameSelect">
+            <option>Zelda</option>
+            <option>God of War</option>
+            <option>Fortnite</option>
+            <option>Minecraft</option>
+        </select>
+        
+        <label>Note (0 à 5) :</label>
+        <input type="number" id="rating" min="0" max="5" step="0.5">
+        
+        <label>Ton commentaire :</label>
+        <textarea id="comment" rows="3" placeholder="J'ai adoré ce jeu parce que..."></textarea>
+        
+        <button onclick="ajouterAvis()">📝 PUBLIER MON AVIS</button>
+    </div>
+
+    <h2>💬 AVIS DES JOUEURS</h2>
+    <div id="avisContainer">
+    </div>
+</div>
+
+<footer>
+    <p>© 2024 - Mon projet jeux vidéo</p>
+    <p>🎮 Amuse-toi bien ! 🎮</p>
+</footer>
+
+<script>
+    const mesJeux = [
+        { nom: "Zelda", type: "Aventure", emoji: "🗡️", etoiles: "⭐⭐⭐⭐⭐" },
+        { nom: "God of War", type: "Action", emoji: "🪓", etoiles: "⭐⭐⭐⭐⭐" },
+        { nom: "Fortnite", type: "Battle Royale", emoji: "🔫", etoiles: "⭐⭐⭐⭐" },
+        { nom: "Minecraft", type: "Création", emoji: "⛏️", etoiles: "⭐⭐⭐⭐⭐" },
+        { nom: "Call of Duty", type: "Tir", emoji: "🎯", etoiles: "⭐⭐⭐⭐" },
+        { nom: "FIFA", type: "Sport", emoji: "⚽", etoiles: "⭐⭐⭐⭐" }
+    ];
+
+    function afficherJeux() {
+        let grille = document.getElementById("gamesGrid");
+        grille.innerHTML = "";
+        
+        for(let i = 0; i < mesJeux.length; i++) {
+            let jeu = mesJeux[i];
+            grille.innerHTML += `
+                <div class="game-card">
+                    <div class="game-icon">${jeu.emoji}</div>
+                    <div class="game-name">${jeu.nom}</div>
+                    <div>${jeu.type}</div>
+                    <div>${jeu.etoiles}</div>
+                </div>
+            `;
+        }
+    }
+
+    let listeAvis = JSON.parse(localStorage.getItem("mesAvis")) || [];
+
+    function ajouterAvis() {
+        let jeu = document.getElementById("gameSelect").value;
+        let note = document.getElementById("rating").value;
+        let commentaire = document.getElementById("comment").value;
+        
+        if(commentaire === "") {
+            alert("⚠️ Tu dois écrire un commentaire !");
+            return;
+        }
+        
+        if(note === "" || note < 0 || note > 5) {
+            alert("⚠️ Donne une note entre 0 et 5 !");
+            return;
+        }
+        
+        let aujourdhui = new Date();
+        let date = aujourdhui.getDate() + "/" + (aujourdhui.getMonth()+1) + "/" + aujourdhui.getFullYear();
+        
+        let nouvelAvis = {
+            id: Date.now(),
+            jeu: jeu,
+            note: parseFloat(note),
+            commentaire: commentaire,
+            date: date
+        };
+        
+        listeAvis.unshift(nouvelAvis);
+        localStorage.setItem("mesAvis", JSON.stringify(listeAvis));
+        
+        document.getElementById("rating").value = "";
+        document.getElementById("comment").value = "";
+        
+        afficherAvis();
+        alert("✅ Merci pour ton avis !");
+    }
+
+    function supprimerAvis(id) {
+        let nouveauxAvis = [];
+        for(let i = 0; i < listeAvis.length; i++) {
+            if(listeAvis[i].id !== id) {
+                nouveauxAvis.push(listeAvis[i]);
+            }
+        }
+        listeAvis = nouveauxAvis;
+        localStorage.setItem("mesAvis", JSON.stringify(listeAvis));
+        afficherAvis();
+    }
+
+    function afficherAvis() {
+        let container = document.getElementById("avisContainer");
+        
+        if(listeAvis.length === 0) {
+            container.innerHTML = "<p style='text-align:center;'>🎮 Sois le premier à donner ton avis ! 🎮</p>";
+            return;
+        }
+        
+        container.innerHTML = "";
+        for(let i = 0; i < listeAvis.length; i++) {
+            let avis = listeAvis[i];
+            
+            let etoiles = "";
+            for(let j = 0; j < Math.floor(avis.note); j++) {
+                etoiles += "⭐";
+            }
+            if(avis.note % 1 !== 0) {
+                etoiles += "½";
+            }
+            
+            container.innerHTML += `
+                <div class="review">
+                    <div><strong>🎮 ${avis.jeu}</strong> - Note : ${etoiles} (${avis.note}/5)</div>
+                    <div style="margin: 10px 0;">💬 "${avis.commentaire}"</div>
+                    <div style="font-size: 0.8em;">📅 ${avis.date}</div>
+                    <button class="delete" onclick="supprimerAvis(${avis.id})">🗑️ Supprimer</button>
+                </div>
+            `;
+        }
+    }
+
+    afficherJeux();
+    afficherAvis();
+    
+</script>
+</body>
+</html>
